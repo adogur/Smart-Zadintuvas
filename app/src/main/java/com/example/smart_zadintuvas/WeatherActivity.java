@@ -21,10 +21,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,10 +62,10 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         double lat  = round(location.getLatitude(), 2);
         double longt = round(location.getLongitude(), 2);
         txtLat.setText("Latitude: " + lat + ", Longitude: " + longt);
-        gaunaMiesta(lat, longt);
+        gaunaOrus(lat, longt);
     }
 
-    public void gaunaMiesta(double lat, double longt)
+    /*public void gaunaMiesta(double lat, double longt)
     {
         String tempUrl = "";
         String latitude = "" + lat;
@@ -102,11 +100,14 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
                 });
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(jsonObjectRequest);
-    }
+    }*/
 
-    private void gaunaOrus(String name, String salis){
+    private void gaunaOrus(double lat, double longt){
         String tempUrl = "";
-        tempUrl = url2 + "?q=" + name + "," + salis + "&appid=" + appID;
+        //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
+        String latitude = "" + lat;
+        String longtitude = "" + longt;
+        tempUrl = url2 + "?lat=" + latitude + "&lon=" + longtitude + "&appid=" + appID;
         Log.d("url2: ", tempUrl);
         StringRequest jsonObjectRequest = new StringRequest
                 (Request.Method.GET, tempUrl, new Response.Listener<String>() {
@@ -115,18 +116,15 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
                         if (response != null) {
                             String output = "";
                             Log.d("response2", response);
-                            apdorotiOrus(response, name, salis);
+                            apdorotiOrus(response);
                             }
                         }
-
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
+                        txtJSON.setText("Failed to get weather information.");
                     }
                 });
-
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(jsonObjectRequest);
     }
@@ -141,20 +139,23 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         else return 0;
     }
 
-    public void apdorotiOrus(String response, String miestas, String salis)
+    public void apdorotiOrus(String response)
     {
         String output = "";
         try {
             JSONObject jsonResponse = new JSONObject(response);
             JSONArray jsonArray = jsonResponse.getJSONArray("weather");
+            JSONObject jsonArraySys = jsonResponse.getJSONObject("sys");
             JSONObject jsonObjectWeather = jsonArray.getJSONObject(0);
+            String salis = jsonArraySys.getString("country");
+            String miestas = jsonResponse.getString("name");
             String main = jsonObjectWeather.getString("main");
             String description = jsonObjectWeather.getString("description");
             JSONObject jsonObjectMain = jsonResponse.getJSONObject("main");
-            double temp = jsonObjectMain.getDouble("temp") - 273.15;
-            double feelsLike = jsonObjectMain.getDouble("feels_like") - 273.15;
+            double temp = jsonObjectMain.getDouble("temp") - 273.1;
+            double feelsLike = jsonObjectMain.getDouble("feels_like") - 273.1;
             output += " Current weather of " + miestas + " (" + salis + ")"
-                    + "\n Temp: " + df.format(temp) + " °C"
+                    + "\n Temperature: " + df.format(temp) + " °C"
                     + "\n Feels Like: " + df.format(feelsLike) + " °C"
                     + "\n Weather: " + main
                     + "\n Description: " + description;
@@ -162,14 +163,34 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
             txtJSON.setText(output);
             txtJSON.setVisibility(View.VISIBLE);
             txtLat.setVisibility(View.VISIBLE);
+
+            switch(main) {
+                case "Clear":
+                    findViewById(R.id.sunView).setVisibility(View.VISIBLE);
+                    findViewById(R.id.cloudView).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.rainView).setVisibility(View.INVISIBLE);
+                    break;
+                case "Rain":
+                    findViewById(R.id.sunView).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.cloudView).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.rainView).setVisibility(View.VISIBLE);
+                    break;
+                case "Clouds":
+                    findViewById(R.id.sunView).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.cloudView).setVisibility(View.VISIBLE);
+                    findViewById(R.id.rainView).setVisibility(View.INVISIBLE);
+                    break;
+                case "Snow":
+                    findViewById(R.id.sunView).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.cloudView).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.rainView).setVisibility(View.INVISIBLE);
+                    break;
+                default:
+            }
             findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
 }

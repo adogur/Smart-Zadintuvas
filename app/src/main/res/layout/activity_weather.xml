@@ -33,15 +33,55 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/locationtextview" />
 
+
+    <ImageView
+        android:id="@+id/rainView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="53dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/loadingPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/jsontextView"
+        app:srcCompat="@drawable/cloud_rain" />
+
+    <ImageView
+        android:id="@+id/cloudView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="53dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/loadingPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/jsontextView"
+        app:srcCompat="@drawable/cloud" />
+
+    <ImageView
+        android:id="@+id/sunView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="53dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/loadingPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/jsontextView"
+        app:srcCompat="@drawable/sun" />
+
     <RelativeLayout
         android:id="@+id/loadingPanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center" >
+        android:gravity="center">
+
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true" />
+
     </RelativeLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
